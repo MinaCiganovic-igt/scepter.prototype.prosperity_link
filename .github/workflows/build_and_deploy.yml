@@ -1,0 +1,28 @@
+name: build_and_deploy
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events of numerical tags
+  push:
+    tags:
+      - '[0-9]+'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      ref:
+        type: string
+        required: true
+        description: >
+          The tag to checkout and use as release version. When checking out the
+          repository that triggered a workflow, this defaults to the reference
+          for that event.
+
+jobs:
+  call-workflow:
+    uses: igt-all/scepter.build.workflows/.github/workflows/build_and_deploy_prototype_win.yml@master
+    with:
+      release_version: ${{ github.ref_name || inputs.ref }}
+    secrets:
+      GGA_WORKFLOWS_APP_ID: ${{ secrets.GGA_WORKFLOWS_APP_ID }}
+      GGA_WORKFLOWS_APP_KEY: ${{ secrets.GGA_WORKFLOWS_APP_KEY }}

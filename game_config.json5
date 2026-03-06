@@ -1,0 +1,3 @@
+{
+    "excel_io": "standard", // possible values: "standard", "used_range", "no_excel"
+}

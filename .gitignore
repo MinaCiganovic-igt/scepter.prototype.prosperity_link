@@ -1,0 +1,27 @@
+syntax: glob
+install
+*~
+*.pyc
+*.pyo
+*.swo
+*.swp
+*.exe
+*.log
+*.idea
+tags
+build
+batch_results
+sibl_files
+dist
+looser_seeds.pkl
+Thumbs.db
+reel_hallowen.psd
+*.orig
+.py*_conda/
+stats_report.json
+*/project_gfx/generated/
+*~*
+/excel_pickle.pkl
+/weights.xlsx
+/.vs
+.pkl

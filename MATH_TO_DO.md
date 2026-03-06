@@ -1,0 +1,3 @@
+# MATH TO DO
+
+* Clean up a lot of the code...

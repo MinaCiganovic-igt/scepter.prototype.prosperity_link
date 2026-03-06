@@ -1,0 +1,21 @@
+{"product": $product_name,
+ "mfw_tag": $mfw_tag,
+ "artifacts":
+ [
+     {
+         "name": $product_name,
+         "version": $version,
+         "parts":
+         [
+             {
+                 "format": "as-is",
+                 "architecture": "x86_64",
+                 "files":
+                 [
+                    $install_package
+                 ]
+             }
+         ]
+     }
+ ]
+}
