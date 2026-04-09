@@ -1,13 +1,13 @@
 import prototype_installer_config
-from prototype_vibe.project_gfx.scene_wheel import SceneWheel
+from prosperity_link.project_gfx.scene_wheel import SceneWheel
 import pyglet
 from global_variables import GlobalConfig as GV
 import pickle
 from global_variables import BonusNames as BN
-from prototype_vibe.project_gfx.scene_basegame import SceneBaseGame
-from prototype_vibe.project_gfx.scene_freegame import SceneFreeGame
-from prototype_vibe.project_gfx.scene_holdandspin import SceneHoldAndSpin
-from prototype_vibe.project_logic.project_logic import MyLogic
+from prosperity_link.project_gfx.scene_basegame import SceneBaseGame
+from prosperity_link.project_gfx.scene_freegame import SceneFreeGame
+from prosperity_link.project_gfx.scene_holdandspin import SceneHoldAndSpin
+from prosperity_link.project_logic.project_logic import MyLogic
 from scepter.common.comm_event_loop_dispatcher import CommEventLoopDispatcher
 from scepter.common.comm_objects import CommGfxLoadFromExcel
 from scepter.common.constants import MeterConstants as MC
@@ -17,7 +17,7 @@ from scepter.core.logic.meter import Meter
 from scepter.gfx.dashboard.dashboard import DashboardBlueprint, DashboardParameters
 from scepter.gfx.scenes.scene_handler import SceneBlueprint, SceneParameters
 from scepter.trigger_handler import TriggerHandler
-from prototype_vibe.project_gfx.project_image_creation import (
+from prosperity_link.project_gfx.project_image_creation import (
     GameGfxSymbols,
 )
 
@@ -32,7 +32,7 @@ meters = {
         MC.WIN, 
         MC.TOTAL_BET, 
         MC.FREE_GAMES, 
-        MC.SPIN_COUNTER, 
+        MC.SPIN_COUNTER,
     ]
 }
 
@@ -165,7 +165,7 @@ def main():
     entry_point = comm_pipeline.gfx_communication_layer.entrypoint
     entry_point.set_visible(True)
     dashboard = entry_point.dashboard
-    dashboard.update_visualization_of_meters({mn: int(mylogic.meters[mn].value) for mn in meters})
+    dashboard.update_visualization_of_meters({mn: int(mylogic.meters[mn].value) for mn in meters if mn!="FREE_GAMES_PLAYED"})
 
     def update_stake_change():
         pass

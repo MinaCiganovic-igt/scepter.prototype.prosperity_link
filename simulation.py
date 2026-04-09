@@ -10,7 +10,7 @@ from global_variables import BonusNames as BN
 mp.freeze_support()
 import pickle
 
-from prototype_vibe.project_logic.project_logic import MyLogic
+from prosperity_link.project_logic.project_logic import MyLogic
 from scepter.common.comm_event_loop_dispatcher import CommEventLoopDispatcher
 from scepter.common.comm_objects import CommGfxLoadFromExcel
 from scepter.communication_pipeline import CommunicationPipeline
@@ -39,7 +39,7 @@ def main():
         sys.argv[1]
         GV.NUM_OF_GAMES = int(sys.argv[1])
     except:
-        GV.NUM_OF_GAMES = 1_000_000
+        GV.NUM_OF_GAMES = 100000 #bilo 1_000_000
     GV.NUM_OF_BATCHES = int(GV.NUM_OF_GAMES / GV.BATCH_SIZE) 
     
     mylogic = MyLogic(meters=meters)

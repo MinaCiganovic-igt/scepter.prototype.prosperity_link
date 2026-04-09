@@ -3,32 +3,39 @@ class GlobalConfig:
     CTC: int = 40
     BET_MULTIPLIER: int = 2
     ANTE: int = 5
-    BATCH_SIZE: int = 1_000
-    PARALLEL_COMPUTING: bool = True
+    BATCH_SIZE: int = 1_00 #bilo 1000
+    PARALLEL_COMPUTING: bool = False #bilo True
     PRIZE_FIRST: bool = False
     CREATE_OUTCOMES: bool = False
     DRAWGAME_LIST: list = []
     OUTCOMES_DICT: dict = {0: [],}
     MACHINE_BUILD: bool = False
 
+    #dodato da bi radio fg kako treba, povecava se u fg.logic
+    FREE_GAMES_PLAYED = 0
+
     # GAME SPECIFIC GV
     REEL_HEIGHT: int = 3
     NUM_OF_REELS: int = 5
     
     #SIDE MULITPLIERS FOR FORTUNE FURY LRS
-    MULTIPLIERS_ON = True
+    MULTIPLIERS_ON = False
     LRS_MULTIPLIERS = [1,2,3,4,5]
+
+    #SIDE COIN COUNTERS
+    # COUNTER_ON = False
+    # LRS_COUNTERS = [1,2,3]
     
     #JACKPOT PIPS ON TOP COUNTERS
-    JACKPOT_PIPS_ON = True
+    JACKPOT_PIPS_ON = False
     JACKPOT_PIPS_COUNTERS = [0,0,0,0,0]
     
     #DIMMERS ON FOR LOCKED ROWS
     DIMMERS_ON = True
-    DIMMED_REELS = [0,1]  #List of row indices to dim
+    DIMMED_REELS = [0,1,2,3,4,5,6,7,8]  #List of row indices to dim
 
     #HOLD AND SPIN BONUS
-    HNS_ROWS = 4
+    HNS_ROWS = 12
     HNS_COLS = 5
 
     # EXECUTION LIST
@@ -48,6 +55,7 @@ class GlobalConfig:
     SYMBOLS = []
     ETS, STE = {}, {}
 
+    #ALWAYS_RELOAD_EXCEL = False
     ALWAYS_RELOAD_EXCEL = True
 
     WAYS = False
