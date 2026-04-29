@@ -177,15 +177,16 @@ class BaseGameLogic(GamePartLogicTemplate):
 
     def check_triggers(self, coin_trigger_count, sca_trigger_count, bn_trigger_count,
                     mode="bg", enable_wheel=True, has_delay=True):
+        self.coin_places = self.places_in_matrix(self.reelpicture_enum, ["_COI_1_"])
 
-        #if len(self.coin_places) >= coin_trigger_count:
-        if len(self.coin_places) >= 0:
+        if False: #len(self.coin_places) >= coin_trigger_count:
 
             self.send_wininfo("BONUS_TRIGGER", BN.HOLDANDSPIN)
-            starting_coin_picture = np.zeros(shape=(GV.HNS_COLS,GV.HNS_ROWS))
-            for i, row in enumerate(self.current_coinpicture):
-                for j, elem in enumerate(row):
-                    starting_coin_picture[i][j] = elem
+
+            starting_coin_picture = np.zeros(shape=(GV.HNS_COLS, GV.HNS_ROWS))
+            for i, col in enumerate(self.current_coinpicture):
+                for j, elem in enumerate(col):
+                    starting_coin_picture[i][j + 9] = elem
             #hns
             GV.EXECUTION_LIST.insert(0,[BN.HOLDANDSPIN, {"current_coinpicture": starting_coin_picture}])
             self.current_coinpicture = starting_coin_picture
@@ -208,23 +209,30 @@ class BaseGameLogic(GamePartLogicTemplate):
                 trigger_table = self.data["pp_trigger_fg"]
 
             pp_trigger = 0 == trigger_table[len(self.coin_places) - 1].draw_random()
-            #self.pp_pots(pp_trigger,BN.BASEGAME)
+            pp_trigger = True
+            if mode == "bg":
+                self.pp_pots(pp_trigger, BN.BASEGAME)
+            else:
+                self.pp_pots(pp_trigger, BN.FREEGAME)
+
             if pp_trigger:
                 self.send_wininfo("BONUS_TRIGGER", BN.HOLDANDSPIN)
 
                 pot_coins = []
+
                 for i in range(coin_trigger_count - len(self.coin_places)):
                     pot_coins.append(self.coins_has.draw_random())
 
                 starting_coin_picture = np.zeros(shape=(GV.HNS_COLS, GV.HNS_ROWS))
-                for i, row in enumerate(self.current_coinpicture):
-                    for j, elem in enumerate(row):
-                        if elem==0 and len(pot_coins)>0:
+                for i, col in enumerate(self.current_coinpicture):
+                    for j, elem in enumerate(col):
+                        if elem==0 and len(pot_coins)>0: #should be putting pot coins in the first available locations
                             elem = pot_coins.pop()
-                        starting_coin_picture[i][j] = elem
+                        starting_coin_picture[i][j+9] = elem
 
                 GV.EXECUTION_LIST.insert(0, [BN.HOLDANDSPIN, {"current_coinpicture": starting_coin_picture, "reelpicture": self.reelpicture}])
                 self.current_coinpicture = starting_coin_picture
+                self.coin_places = self.places_in_matrix(self.reelpicture_enum, ["_COI_1_"])
                 self.send_wininfo("GAME_SPECIFIC", "rotate_symbols", {
                     "places": self.coin_places,
                     "sound": "fgs_ting",
@@ -235,8 +243,8 @@ class BaseGameLogic(GamePartLogicTemplate):
                     self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_fg")
                 else:
                     self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg")
-        #if len(self.sca_places) >= sca_trigger_count:
-        if len(self.sca_places) >= 0:
+        if len(self.sca_places) >= sca_trigger_count:
+        #if len(self.sca_places) >= 0:
             #total_played = 0
             # if mode == 'fg':
             #     max_fg = 60

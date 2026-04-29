@@ -89,11 +89,16 @@ def draw_locked_row_dimmers(scene, dimmed_reels):
     overlay_color = (base[0], base[1], base[2], alpha)
     overlay_image = pyglet.image.SolidColorImagePattern(overlay_color).create_image(1, 1)
     # Draw one overlay per cell across all reels for each dimmed row
-    for row_idx in dimmed_reels:
+    for row_idx in range(GV.HNS_ROWS):
         for reel_idx in range(GV.HNS_COLS):
             r_x = reel_idx
             r_y = grid.y_cells - (row_idx+1)
             scene.grid_objects.delete(to_delete_sub_string=f"dimmer_{reel_idx}_{row_idx}")
+    for row_idx in dimmed_reels:
+        for reel_idx in range(GV.HNS_COLS):
+            r_x = reel_idx
+            r_y = grid.y_cells - (row_idx+1)
+            #scene.grid_objects.delete(to_delete_sub_string=f"dimmer_{reel_idx}_{row_idx}")
             scene.grid_objects.add(
                 f"dimmer_{reel_idx}_{row_idx}",
                 GridSprite(
@@ -108,3 +113,4 @@ def draw_locked_row_dimmers(scene, dimmed_reels):
                     grid_id=Grid_ID.MAIN.value,
                 ),
             )
+    pass

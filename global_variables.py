@@ -19,7 +19,7 @@ class GlobalConfig:
     NUM_OF_REELS: int = 5
     
     #SIDE MULITPLIERS FOR FORTUNE FURY LRS
-    MULTIPLIERS_ON = False
+    MULTIPLIERS_ON = True
     LRS_MULTIPLIERS = [1,2,3,4,5]
 
     #SIDE COIN COUNTERS

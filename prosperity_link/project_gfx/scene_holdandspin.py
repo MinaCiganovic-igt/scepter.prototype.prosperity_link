@@ -91,11 +91,12 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
             multipliers = GV.LRS_MULTIPLIERS
             if multipliers:
                 draw_multiplier_side(self, multipliers, side="right")
+            print("Multipliers:", multipliers)
         #Draw Jackpot Pip Top Counters
         if GV.JACKPOT_PIPS_ON:
             draw_top_counters(self, GV.JACKPOT_PIPS_COUNTERS)
         if GV.DIMMERS_ON:
-            draw_locked_row_dimmers(self, GV.DIMMED_REELS)
+            draw_locked_row_dimmers(self, [0,1,2,3,4,5,6,7,8])#need to update if triggered with 9+ coins
         
 
 
@@ -117,9 +118,14 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         handlers = {
             "refresh": self.__refresh,
             "spin_reels": self.__spin_reels,
+            "unlock": self.__unlock_intf,
         }
         handlers.get(scepterInfo.id, self.standard_scepterinfo)(scepterInfo)
-            
+
+    def __unlock_intf(self, scepterInfo):
+        dimmed = scepterInfo.info["info_dict"]["dimmed_reels"]
+        draw_locked_row_dimmers(self, dimmed)
+
     def __spin_reels(self, scepterInfo):
         self.reels_to_spin[:, :] = 1
         self.grid_objects.delete(to_delete_sub_string=f"spin_sym_")
@@ -135,15 +141,17 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         if GV.MULTIPLIERS_ON:
             mults = getattr(GV, "LRS_MULTIPLIERS", None)
             mults = list(mults)
-            mults = [int(x) + 1 for x in mults] #CHANGE THIS TO HOWEVER YOUR CODE SHOULD FUNCTION
-            GV.LRS_MULTIPLIERS = mults
+            #mults = [int(x) + 1 for x in mults] #CHANGE THIS TO HOWEVER YOUR CODE SHOULD FUNCTION
+            #GV.LRS_MULTIPLIERS = mults
             self.grid_objects.delete(to_delete_sub_string="mult_")
             draw_multiplier_side(self, mults, side="right")
-        if GV.DIMMERS_ON:
-            draw_locked_row_dimmers(self, GV.DIMMED_REELS)
+
         reelpicture = scepterInfo.info["info_dict"]["reelpicture"]
         current_coinpicture = scepterInfo.info["info_dict"]["current_coinpicture"]
         places_to_spin = scepterInfo.info["info_dict"]["places_to_spin"]
+
+
+        #print("SPIN POSITIONS: ", places_to_spin)
         for reel_idx, row_idx in places_to_spin:
             symbols_to_spin = self.create_symbols_to_spin(
                 (reel_idx, row_idx), 
@@ -216,6 +224,8 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
                 
     def __draw_minireel_frame(self, dt, pos, image, sym_name, sym_idx, first_sprite = False):
         reel_idx, row_idx = pos
+        if self.previous_reelpicture[reel_idx, row_idx] != GV.STE["_BLN_2_"]:
+            return
         if self.reels_to_spin[reel_idx, row_idx]:
             grid_object_id = f"spin_sym_{reel_idx}_{row_idx}_{sym_idx}"
             if first_sprite:
