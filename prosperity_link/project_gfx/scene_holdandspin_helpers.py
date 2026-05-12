@@ -8,34 +8,34 @@ from ..project_gfx.scene_template import Grid_ID
 
 CORNER_MARGIN = 0.25
 
-def draw_multiplier_side(scene, multipliers, side: str = "left"):
-    if not multipliers:
+def draw_counter_side(scene, counters, side: str = "left"):
+    if not counters:
         return
-    for row_idx, val in enumerate(multipliers):
+    for row_idx, val in enumerate(reversed(counters)):
         pos_x = GV.HNS_COLS - CORNER_MARGIN
-        pos_y = row_idx + 1 - CORNER_MARGIN
+        pos_y = (row_idx*3)+ 1 - CORNER_MARGIN
         border_color = clrs.rgb_to_rgba(clrs.Black)
         border_image = pyglet.image.SolidColorImagePattern(border_color).create_image(1, 1)
         box_width = 0.6
         box_height = 0.6
         border_thickness = 0.05
-        scene.grid_objects.add(
-            f"mult_border_{row_idx}",
-            GridSprite(
-                r_x=pos_x-.25,
-                r_y=pos_y-1.75,
-                r_width=box_width,
-                r_height=box_height,
-                pict=border_image,
-                whiteboard=scene,
-                batch_id=BT.BASE.value,
-                group_idx=GC.REEL_LABELS - 1,
-                grid_id=Grid_ID.MAIN.value,
-            ),
-        )
+        # scene.grid_objects.add(
+        #     f"mult_border_{row_idx}",
+        #     GridSprite(
+        #         r_x=pos_x-.25,
+        #         r_y=pos_y-1.75,
+        #         r_width=box_width,
+        #         r_height=box_height,
+        #         pict=border_image,
+        #         whiteboard=scene,
+        #         batch_id=BT.BASE.value,
+        #         group_idx=GC.REEL_LABELS - 1,
+        #         grid_id=Grid_ID.MAIN.value,
+        #     ),
+        # )
         
         scene.draw_label_centered(
-            grid_object_id=f"mult_{row_idx}",
+            grid_object_id=f"count_{row_idx}",
             label=str(val),
             position=(pos_x, pos_y),
             color=clrs.Red,
@@ -113,4 +113,3 @@ def draw_locked_row_dimmers(scene, dimmed_reels):
                     grid_id=Grid_ID.MAIN.value,
                 ),
             )
-    pass

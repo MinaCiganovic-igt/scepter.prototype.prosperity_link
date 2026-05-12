@@ -14,7 +14,7 @@ from scepter.gfx.grid_object_manipulations.move_grid_objects import move_grid_ob
 from scepter.gfx.scenes.scene import Scene
 from scepter.gfx.grid_objects.grid_sprite import GridSprite
 from ..project_gfx.scene_template import Grid_ID, SceneGamepartTemplate
-from .scene_holdandspin_helpers import draw_multiplier_side, draw_top_counters, draw_locked_row_dimmers
+from .scene_holdandspin_helpers import draw_counter_side, draw_top_counters, draw_locked_row_dimmers
 
 BY = 0.06
 TY = 0.3
@@ -61,6 +61,12 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
     def _cell_center(self, reel: int, row: int) -> Tuple[float, float]:
         """Return the centered cell coordinates used for drawing sprites/labels."""
         return (reel + CENTER_OFFSET, row + CENTER_OFFSET)
+    # def _cell_center(self, reel: int, row: int):
+    #     gap_size = 0.6  # razmak između grupa od 3 reda
+    #     group = row // 3
+    #     x = reel + CENTER_OFFSET
+    #     y = row + CENTER_OFFSET + group * gap_size
+    #     return (x, y)
 
     def initialize_visualization(self, meter_updater=None):
         self.previous_reelpicture = np.full((GV.HNS_COLS, GV.HNS_ROWS), GV.STE["_BLN_2_"])
@@ -87,17 +93,18 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         self.meter_updater = meter_updater
         meters_to_update = {"RANDOM_SEED": GV.RANDOM_SEED}
         self.meter_updater(meters_to_update)
-        if GV.MULTIPLIERS_ON:
-            multipliers = GV.LRS_MULTIPLIERS
-            if multipliers:
-                draw_multiplier_side(self, multipliers, side="right")
-            print("Multipliers:", multipliers)
+        if GV.COUNTER_ON:
+            counters = GV.LRS_COUNTERS
+            if counters:
+                draw_counter_side(self, counters, side="right")
+
+            print("Counters:", counters)
         #Draw Jackpot Pip Top Counters
         if GV.JACKPOT_PIPS_ON:
             draw_top_counters(self, GV.JACKPOT_PIPS_COUNTERS)
         if GV.DIMMERS_ON:
             draw_locked_row_dimmers(self, [0,1,2,3,4,5,6,7,8])#need to update if triggered with 9+ coins
-        
+
 
 
     def create_symbols_to_spin(self, pos, first_element, last_element):
@@ -118,17 +125,21 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         handlers = {
             "refresh": self.__refresh,
             "spin_reels": self.__spin_reels,
-            "unlock": self.__unlock_intf,
+            #"unlock": self.__unlock_intf,
         }
         handlers.get(scepterInfo.id, self.standard_scepterinfo)(scepterInfo)
 
-    def __unlock_intf(self, scepterInfo):
-        dimmed = scepterInfo.info["info_dict"]["dimmed_reels"]
-        draw_locked_row_dimmers(self, dimmed)
+    # def __unlock_intf(self, scepterInfo):
+    #     dimmed = scepterInfo.info["info_dict"]["dimmed_reels"]
+    #     self.grid_objects.delete(to_delete_sub_string="dimmer_")
+    #     draw_locked_row_dimmers(self, dimmed)
 
     def __spin_reels(self, scepterInfo):
         self.reels_to_spin[:, :] = 1
         self.grid_objects.delete(to_delete_sub_string=f"spin_sym_")
+        dimmed = scepterInfo.info["info_dict"]["dimmed_reels"]
+
+
         # increment top counters each spin and redraw
         if not hasattr(self, "top_counters"):
             self.top_counters = [0] * 5
@@ -138,13 +149,13 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
             #
             #
             draw_top_counters(self, GV.JACKPOT_PIPS_COUNTERS)
-        if GV.MULTIPLIERS_ON:
-            mults = getattr(GV, "LRS_MULTIPLIERS", None)
-            mults = list(mults)
+        if GV.COUNTER_ON:
+            counts = getattr(GV, "LRS_COUNTERS", None)
+            counts = list(counts)
             #mults = [int(x) + 1 for x in mults] #CHANGE THIS TO HOWEVER YOUR CODE SHOULD FUNCTION
             #GV.LRS_MULTIPLIERS = mults
-            self.grid_objects.delete(to_delete_sub_string="mult_")
-            draw_multiplier_side(self, mults, side="right")
+            self.grid_objects.delete(to_delete_sub_string="count_")
+            draw_counter_side(self, counts, side="right")
 
         reelpicture = scepterInfo.info["info_dict"]["reelpicture"]
         current_coinpicture = scepterInfo.info["info_dict"]["current_coinpicture"]
@@ -188,6 +199,15 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
             self.timer.time_span(round((GV.HNS_ROWS * (GV.HNS_COLS-1) + (GV.HNS_ROWS-1)) * GV.OM["MINIREELS_SPEED"] + GV.OM["HOLDANDSPIN"])),
             scepterInfo,
         )
+        pyglet.clock.schedule_once(
+            self.draw_locked_row_dimmers1,
+            self.timer.time_span(round((GV.HNS_ROWS * (GV.HNS_COLS-1) + (GV.HNS_ROWS-1)) * GV.OM["MINIREELS_SPEED"] + GV.OM["HOLDANDSPIN"])),
+            dimmed,
+        )
+
+    def draw_locked_row_dimmers1(self, dt, dimmed):
+        self.grid_objects.delete(to_delete_sub_string="dimmer_")
+        draw_locked_row_dimmers(self, dimmed)
     
     def __single_pass(self, dt, pos, symbol, sym_idx):
         reel_idx, row_idx = pos
@@ -276,6 +296,7 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
                 grid_id=Grid_ID.MAIN.value,
                 group=GC.REEL_LABELS,
             )
+
 
     
     

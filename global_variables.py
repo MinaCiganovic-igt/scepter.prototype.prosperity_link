@@ -19,12 +19,12 @@ class GlobalConfig:
     NUM_OF_REELS: int = 5
     
     #SIDE MULITPLIERS FOR FORTUNE FURY LRS
-    MULTIPLIERS_ON = True
-    LRS_MULTIPLIERS = [1,2,3,4,5]
+    # MULTIPLIERS_ON = True
+    # LRS_MULTIPLIERS = [1,2,3,4,5]
 
     #SIDE COIN COUNTERS
-    # COUNTER_ON = False
-    # LRS_COUNTERS = [1,2,3]
+    COUNTER_ON = True
+    LRS_COUNTERS = [1,2,3]
     
     #JACKPOT PIPS ON TOP COUNTERS
     JACKPOT_PIPS_ON = False
