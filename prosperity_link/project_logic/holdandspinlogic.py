@@ -1,5 +1,5 @@
 import random
-
+import copy
 from pyglet.window.key import PRINT
 
 from global_variables import GlobalConfig as GV
@@ -22,7 +22,7 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
         self.send_wininfo("GAME_SPECIFIC", "refresh", info_dict)
 
     def play(self, **kwargs):
-        print("HNS start\n")
+        # print("HNS start\n")
         self.sib = ScepterInfoBlock(BN.HOLDANDSPIN)
         parameters = kwargs["parameters"]
         self.speed_up_sim = kwargs["speed_up_sim"]
@@ -41,13 +41,13 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
         self.num_coins_per_level = [0, 0, 0, 0]
         self.dim_step = 0
 
-        print("Matrix: ", self.reelpicture_enum)
-        print("Coin positions:", self.get_all_coin_positions())
+        # print("Matrix: ", self.reelpicture_enum)
+        # print("Coin positions:", self.get_all_coin_positions())
 
         for pos in self.get_active_coin_positions():
             level = self.get_level(pos)
             self.num_coins_per_level[level] += 1
-        print("Initial coins per level:", self.num_coins_per_level)
+        # print("Initial coins per level:", self.num_coins_per_level)
         #self.coin_positions = self.places_in_matrix(self.reelpicture_enum, ["_COI_1_"])
         #self.num_locked_coins = len(self.coin_positions)
 
@@ -60,7 +60,7 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
         self.meters[MC.SPIN_COUNTER].set_value(3)
         self.send_wininfo("UPDATE_METERS", wininfo_data={"meters": self.meters})
         self.refresh()
-        self.show_status()
+        #self.show_status()
         while self.meters[MC.SPIN_COUNTER].value > 0:
 
             self.spin_coins_before = list(self.num_coins_per_level)
@@ -86,7 +86,6 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
                     symbol = self.data["rs_tables"][rs_id].draw_random()
 
                     if symbol == "_COI_1_":
-                        print("If statement triggered")
                         self.lock_coin(level, pos, table)
                         new_coin_landed = True
 
@@ -110,10 +109,10 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
             else:
                  self.meters[MC.SPIN_COUNTER].increase_value(-1)
 
-            print("End spin summary")
-            print("Coins per level: ",self.num_coins_per_level)
-            print("Unlocked levels: ",self.unlocked_levels)
-            print("Active coins: ", len(self.get_active_coin_positions()))
+            # print("End spin summary")
+            # print("Coins per level: ",self.num_coins_per_level)
+            # print("Unlocked levels: ",self.unlocked_levels)
+            # print("Active coins: ", len(self.get_active_coin_positions()))
 
             # if self.unlocked_levels[1]: # bad practice by David
             #     if self.unlocked_levels[2]:
@@ -125,12 +124,12 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
             #         dimmed = [0,1,2,3,4,5]
             # else:
             #     dimmed = [0,1,2,3,4,5,6,7,8]
-            self.update_unlocks()
-            self.update_multipliers()
-            self.update_dimmed_reels()
+            # self.update_unlocks()
+            # self.update_multipliers()
+            # self.update_dimmed_reels()
 
-            dimmed = GV.DIMMED_REELS
-            counter = GV.LRS_COUNTERS
+            dimmed = copy.deepcopy(GV.DIMMED_REELS)
+            counters = copy.deepcopy(GV.LRS_COUNTERS)
 
             self.send_wininfo("WAIT_FOR_USER_INPUT")
             info_dict = {
@@ -138,7 +137,7 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
                                 "current_coinpicture": self.current_coinpicture,
                                 "places_to_spin": all_blanks,
                                 "dimmed_reels": dimmed,
-                                "counters": counter,
+                                "counters": counters,
                                 "unlocked_levels": self.unlocked_levels,
                             }
 
@@ -151,7 +150,7 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
             #self.refresh()
 
             self.spins_played += 1
-            self.show_status()
+            #self.show_status()
 
         for place in self.get_active_coin_positions():
             self.send_wininfo("GAME_SPECIFIC", "collect_coin", {
@@ -213,24 +212,28 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
         # self.num_coins_per_level = [starting_coins, 0,0,0]
 
     def lock_coin(self, level, pos, table):
-        print(f"Coin landed at {pos}")
-        print("Level: ", level)
-        print("Before update: ", self.num_coins_per_level)
+        # print(f"Coin landed at {pos}")
+        # print("Level: ", level)
+        # print("Before update: ", self.num_coins_per_level)
         self.reelpicture_enum[pos] = GV.STE["_COI_1_"]
         self.reelpicture[pos] = "_COI_1_"
         value = table[level].draw_random()
 
         self.current_coinpicture[pos] = value
         self.num_coins_per_level[level] += 1
-        self.pending_update = True
-        print("After update: ",self.num_coins_per_level)
+        self.update_unlocks()
+        self.update_counters()
+        self.update_dimmed_reels()
 
-    def update_multipliers(self):
+        self.pending_update = True
+        #print("After update: ",self.num_coins_per_level)
+
+    def update_counters(self):
         need_lvl1 = max(0, 9 - self.num_coins_per_level[0])
         need_lvl2 = max(0, 18 - sum(self.num_coins_per_level[:2]))
         need_lvl3 = max(0, 32 - sum(self.num_coins_per_level[:3]))
         GV.LRS_COUNTERS = [need_lvl1, need_lvl2, need_lvl3]
-        print("COUNTERS:", GV.LRS_COUNTERS)
+        #print("COUNTERS:", GV.LRS_COUNTERS)
 
     def update_dimmed_reels(self):
         base = [0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -243,7 +246,7 @@ class HoldAndSpinLogic(GamePartLogicTemplate):
         else:
             GV.DIMMED_REELS = []
 
-        print(GV.DIMMED_REELS)
+        #print(GV.DIMMED_REELS)
 
     def show_status(self):
         print("\n--------------------------")

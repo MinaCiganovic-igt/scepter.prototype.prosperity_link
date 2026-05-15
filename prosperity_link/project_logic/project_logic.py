@@ -481,7 +481,7 @@ class MyLogic(Logic):
                     stake_options=self.stake_options,
                     playmode=playmode,
                     parameters=parameters,
-                    speed_up_sim =speed_up_sim,
+                    speed_up_sim = False#speed_up_sim,
                 )
             )
         # if self.meters[MC.WIN].value: # any win
@@ -490,4 +490,11 @@ class MyLogic(Logic):
         #     si.add("credit_win", 0)
         #     sib.add_scepterinfo(si)
         #     scepterInfoBlockList.append(sib)
+
+        # for sib in scepterInfoBlockList:
+        #     print(sib.scene_name)
+        #     for si in sib.scepterinfos:
+        #         print(si.id)
+        #     print("")
+
         return scepterInfoBlockList, False

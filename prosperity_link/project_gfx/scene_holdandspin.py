@@ -94,7 +94,8 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         meters_to_update = {"RANDOM_SEED": GV.RANDOM_SEED}
         self.meter_updater(meters_to_update)
         if GV.COUNTER_ON:
-            counters = GV.LRS_COUNTERS
+            #counters = GV.LRS_COUNTERS
+            counters = [max(9-GV.TRIGGERING_MB,0),18-GV.TRIGGERING_MB,32-GV.TRIGGERING_MB]
             if counters:
                 draw_counter_side(self, counters, side="right")
 
@@ -102,10 +103,10 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         #Draw Jackpot Pip Top Counters
         if GV.JACKPOT_PIPS_ON:
             draw_top_counters(self, GV.JACKPOT_PIPS_COUNTERS)
-        if GV.DIMMERS_ON:
-            draw_locked_row_dimmers(self, [0,1,2,3,4,5,6,7,8])#need to update if triggered with 9+ coins
-
-
+        if GV.TRIGGERING_MB >= 9:
+            draw_locked_row_dimmers(self, [0,1,2,3,4,5])
+        else:
+            draw_locked_row_dimmers(self, [0,1,2,3,4,5,6,7,8])
 
     def create_symbols_to_spin(self, pos, first_element, last_element):
         reel_idx, row_idx = pos
@@ -138,11 +139,11 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         self.reels_to_spin[:, :] = 1
         self.grid_objects.delete(to_delete_sub_string=f"spin_sym_")
         dimmed = scepterInfo.info["info_dict"]["dimmed_reels"]
-
+        counters = scepterInfo.info["info_dict"]["counters"]
 
         # increment top counters each spin and redraw
         if not hasattr(self, "top_counters"):
-            self.top_counters = [0] * 5
+            self.top_counters = [0] * 3
         if GV.JACKPOT_PIPS_ON:
             #ADD LOGIC FOR GV.JACKPOTS_PIPS_COUNTERS INCREMENT IF NEEDED
             #
@@ -150,8 +151,7 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
             #
             draw_top_counters(self, GV.JACKPOT_PIPS_COUNTERS)
         if GV.COUNTER_ON:
-            counts = getattr(GV, "LRS_COUNTERS", None)
-            counts = list(counts)
+            counts = counters
             #mults = [int(x) + 1 for x in mults] #CHANGE THIS TO HOWEVER YOUR CODE SHOULD FUNCTION
             #GV.LRS_MULTIPLIERS = mults
             self.grid_objects.delete(to_delete_sub_string="count_")

@@ -179,17 +179,20 @@ class BaseGameLogic(GamePartLogicTemplate):
                     mode="bg", enable_wheel=True, has_delay=True):
         self.coin_places = self.places_in_matrix(self.reelpicture_enum, ["_COI_1_"])
 
-        if False: #len(self.coin_places) >= coin_trigger_count:
-
+        if len(self.coin_places) >= coin_trigger_count:
+            GV.TRIGGERING_MB = len(self.coin_places)
             self.send_wininfo("BONUS_TRIGGER", BN.HOLDANDSPIN)
-
+            if GV.TRIGGERING_MB >= 9:
+                self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg_9+")
             starting_coin_picture = np.zeros(shape=(GV.HNS_COLS, GV.HNS_ROWS))
             for i, col in enumerate(self.current_coinpicture):
                 for j, elem in enumerate(col):
                     starting_coin_picture[i][j + 9] = elem
-            #hns
-            GV.EXECUTION_LIST.insert(0,[BN.HOLDANDSPIN, {"current_coinpicture": starting_coin_picture}])
+
+            GV.EXECUTION_LIST.insert(0, [BN.HOLDANDSPIN, {"current_coinpicture": starting_coin_picture,
+                                                          "reelpicture": self.reelpicture}])
             self.current_coinpicture = starting_coin_picture
+            self.coin_places = self.places_in_matrix(self.reelpicture_enum, ["_COI_1_"])
             self.send_wininfo("GAME_SPECIFIC", "rotate_symbols", {
                 "places": self.coin_places,
                 "sound": "fgs_ting",
@@ -199,7 +202,7 @@ class BaseGameLogic(GamePartLogicTemplate):
             if mode == 'fg':
                 self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_fg")
             else:
-                self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg")
+                self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg", {"triggering_MBs": GV.TRIGGERING_MB})
 
         elif len(self.coin_places) > 0:
 
@@ -209,7 +212,8 @@ class BaseGameLogic(GamePartLogicTemplate):
                 trigger_table = self.data["pp_trigger_fg"]
 
             pp_trigger = 0 == trigger_table[len(self.coin_places) - 1].draw_random()
-            pp_trigger = True
+            #pp_trigger = True
+            GV.TRIGGERING_MB = 6
             if mode == "bg":
                 self.pp_pots(pp_trigger, BN.BASEGAME)
             else:
@@ -242,7 +246,7 @@ class BaseGameLogic(GamePartLogicTemplate):
                 if mode == 'fg':
                     self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_fg")
                 else:
-                    self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg")
+                    self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg", {"triggering_MBs": GV.TRIGGERING_MB})
         if len(self.sca_places) >= sca_trigger_count:
         #if len(self.sca_places) >= 0:
             #total_played = 0

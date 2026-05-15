@@ -81,8 +81,8 @@ trigger_handler.add_trigger(
     callback=lambda sib: (any([(f"full_grid_has" in si.id) for si in sib.scepterinfos])),
 )
 trigger_handler.add_trigger(
-    pyglet.window.key._9, 0, helptext=f"trigger_bn",
-    callback=lambda sib: (any([(f"trigger_bn" in si.id) for si in sib.scepterinfos])),
+    pyglet.window.key._9, 0, helptext=f"trigger_has_from_bg_9+",
+    callback=lambda sib: (any([(f"trigger_has_from_bg_9+" in si.id) for si in sib.scepterinfos])),
 )
     
 # SCENE AND DASHBOARD

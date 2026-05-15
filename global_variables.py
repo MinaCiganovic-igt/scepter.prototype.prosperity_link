@@ -34,6 +34,8 @@ class GlobalConfig:
     DIMMERS_ON = True
     DIMMED_REELS = [0,1,2,3,4,5,6,7,8]  #List of row indices to dim
 
+    TRIGGERING_MB = 0
+
     #HOLD AND SPIN BONUS
     HNS_ROWS = 12
     HNS_COLS = 5
