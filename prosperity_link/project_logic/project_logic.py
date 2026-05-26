@@ -484,12 +484,12 @@ class MyLogic(Logic):
                     speed_up_sim = False#speed_up_sim,
                 )
             )
-        # if self.meters[MC.WIN].value: # any win
-        #     sib = ScepterInfoBlock(BN.BASEGAME)
-        #     si = ScepterInfo(set([SIT.STATS_PAYLOAD]), f"any_win")
-        #     si.add("credit_win", 0)
-        #     sib.add_scepterinfo(si)
-        #     scepterInfoBlockList.append(sib)
+        if self.meters[MC.WIN].value: # any win
+            sib = ScepterInfoBlock(BN.BASEGAME)
+            si = ScepterInfo(set([SIT.STATS_PAYLOAD]), f"any_win")
+            si.add("credit_win", 0)
+            sib.add_scepterinfo(si)
+            scepterInfoBlockList.append(sib)
 
         # for sib in scepterInfoBlockList:
         #     print(sib.scene_name)

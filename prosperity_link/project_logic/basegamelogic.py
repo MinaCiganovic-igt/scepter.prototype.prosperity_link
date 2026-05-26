@@ -94,7 +94,7 @@ class BaseGameLogic(GamePartLogicTemplate):
         sca_per_reel[[pos[0] for pos in self.sca_places]] = 1
         self.reels_to_tension_spin = np.zeros(GV.NUM_OF_REELS)
         if np.sum(sca_per_reel[:-1]) >= 2:
-            self.send_wininfo("GAME_SPECIFIC", "bg_tension_spin")
+            self.send_wininfo("STATS_EVENT", "bg_tension_spin")
             for reel_idx, _ in enumerate(sca_per_reel):
                 if np.sum(sca_per_reel[:reel_idx]) == 2:
                     self.reels_to_tension_spin[reel_idx] = 1
@@ -183,7 +183,7 @@ class BaseGameLogic(GamePartLogicTemplate):
             GV.TRIGGERING_MB = len(self.coin_places)
             self.send_wininfo("BONUS_TRIGGER", BN.HOLDANDSPIN)
             if GV.TRIGGERING_MB >= 9:
-                self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg_9+")
+                self.send_wininfo("STATS_EVENT", "trigger_has_from_bg_9+")
             starting_coin_picture = np.zeros(shape=(GV.HNS_COLS, GV.HNS_ROWS))
             for i, col in enumerate(self.current_coinpicture):
                 for j, elem in enumerate(col):
@@ -200,9 +200,9 @@ class BaseGameLogic(GamePartLogicTemplate):
             if has_delay:
                 self.send_wininfo("GAME_SPECIFIC", "delay", {"delay_amount": "HOLD_REELPICTURE"})
             if mode == 'fg':
-                self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_fg")
+                self.send_wininfo("STATS_EVENT", "trigger_has_from_fg")
             else:
-                self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg", {"triggering_MBs": GV.TRIGGERING_MB})
+                self.send_wininfo("STATS_EVENT", "trigger_has_from_bg", {"triggering_MBs": GV.TRIGGERING_MB})
 
         elif len(self.coin_places) > 0:
 
@@ -244,9 +244,9 @@ class BaseGameLogic(GamePartLogicTemplate):
                 if has_delay:
                     self.send_wininfo("GAME_SPECIFIC", "delay", {"delay_amount": "HOLD_REELPICTURE"})
                 if mode == 'fg':
-                    self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_fg")
+                    self.send_wininfo("STATS_EVENT", "trigger_has_from_fg")
                 else:
-                    self.send_wininfo("GAME_SPECIFIC", "trigger_has_from_bg", {"triggering_MBs": GV.TRIGGERING_MB})
+                    self.send_wininfo("STATS_EVENT", "trigger_has_from_bg", {"triggering_MBs": GV.TRIGGERING_MB})
         if len(self.sca_places) >= sca_trigger_count:
         #if len(self.sca_places) >= 0:
             #total_played = 0
@@ -278,20 +278,20 @@ class BaseGameLogic(GamePartLogicTemplate):
 
                 if current_fg_remaining + current_fg_played + 10 <= max_fg:
                     self.meters[MC.FREE_GAMES].increase_value(10)
-                    self.send_wininfo("GAME_SPECIFIC", "retrigger_fg")
+                    self.send_wininfo("STATS_EVENT", "retrigger_fg")
                     for i in range(10):
                         GV.EXECUTION_LIST.append([BN.FREEGAME, {}])
                 else:
                     increase_by = max_fg - current_fg_remaining - current_fg_played #can only increase by this much
                     self.meters[MC.FREE_GAMES].increase_value(increase_by)
-                    self.send_wininfo("GAME_SPECIFIC", "retrigger_fg")
+                    self.send_wininfo("STATS_EVENT", "retrigger_fg")
                     for i in range(increase_by):
                         GV.EXECUTION_LIST.append([BN.FREEGAME, {}])
 
             else:
                 GV.FREE_GAMES_PLAYED = 0
                 self.meters[MC.FREE_GAMES].set_value(10)
-                self.send_wininfo("GAME_SPECIFIC", "trigger_fg")
+                self.send_wininfo("STATS_EVENT", "trigger_fg")
                 for i in range(10):
                     GV.EXECUTION_LIST.append([BN.FREEGAME, {"already_played":0}])
 
