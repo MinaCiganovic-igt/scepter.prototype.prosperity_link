@@ -305,18 +305,28 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         self.grid_objects.delete(to_delete_sub_string=f"spin_sym_")
         reelpicture = scepterInfo.info["info_dict"]["reelpicture"]
         current_coinpicture = scepterInfo.info["info_dict"]["current_coinpicture"]
+        self.grid_objects.delete(to_delete_sub_string=f"locked_sym_")
         self.grid_objects.delete(to_delete_sub_string=f"reel_sym_")
         self.grid_objects.delete(to_delete_sub_string=f"reel_label_")
         for reel_idx, reel in enumerate(reelpicture):
             for row_idx, symbol in enumerate(reel):
                 label = current_coinpicture[reel_idx, row_idx]
-                self.draw_sprite_centered(
-                    grid_object_id = f"reel_sym_{reel_idx}_{row_idx}",
-                    sprite_name = symbol,
-                    position = (reel_idx + 0.5, row_idx + 0.5),
-                    grid_id = Grid_ID.MAIN.value,
-                    group = GC.REEL_SYMBOLS
-                )
+                if symbol == "_COI_1_":
+                    self.draw_sprite_centered(
+                        grid_object_id = f"locked_sym_{reel_idx}_{row_idx}",
+                        sprite_name = symbol,
+                        position = (reel_idx + 0.5, row_idx + 0.5),
+                        grid_id = Grid_ID.MAIN.value,
+                        group = GC.REEL_SYMBOLS
+                    )
+                else:
+                    self.draw_sprite_centered(
+                        grid_object_id = f"reel_sym_{reel_idx}_{row_idx}",
+                        sprite_name = symbol,
+                        position = (reel_idx + 0.5, row_idx + 0.5),
+                        grid_id = Grid_ID.MAIN.value,
+                        group = GC.REEL_SYMBOLS
+                    )
                 if label:
                     self.draw_label_centered(
                         grid_object_id = f"reel_label_{reel_idx}_{row_idx}",
