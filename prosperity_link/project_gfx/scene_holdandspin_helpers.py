@@ -44,11 +44,12 @@ def draw_counter_side(scene, counters, side: str = "left"):
         
         scene.draw_label_centered(
             grid_object_id=f"count_{row_idx}",
-            label=str(val),
-            position=(pos_x, pos_y),
+            label=str(val) + " coins to unlock",
+            position=(pos_x - 1, pos_y),
             color=clrs.Red,
             grid_id=Grid_ID.MAIN.value,
             group=GC.REEL_LABELS,
+            size = (1.3, 1.3),
         )
 
 def draw_top_counters(scene, counters):
