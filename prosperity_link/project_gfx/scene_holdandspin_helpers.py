@@ -1,19 +1,27 @@
-import pyglet
 from scepter.gfx.grid_objects.grid_sprite import GridSprite
 from scepter.common.constants import BatchTypes as BT
 from scepter.gfx.accessories import colors as clrs
 from global_variables import GlobalConfig as GV
 from global_variables import GroupConstants as GC
 from ..project_gfx.scene_template import Grid_ID
+import pyglet
 
 CORNER_MARGIN = 0.25
+ROW_GROUP_GAP = 0.3  # Must match the gap in scene_holdandspin.py
+
+def get_row_position_with_gap(row_idx):
+    """Calculate row position accounting for gaps between groups of 3 rows."""
+    group = row_idx // 3
+    return row_idx + group * ROW_GROUP_GAP
 
 def draw_counter_side(scene, counters, side: str = "left"):
     if not counters:
         return
     for row_idx, val in enumerate(reversed(counters)):
+        # Calculate position with gap adjustment
+        adjusted_row_pos = get_row_position_with_gap(row_idx * 3)
         pos_x = GV.HNS_COLS - CORNER_MARGIN
-        pos_y = (row_idx*3)+ 1 - CORNER_MARGIN
+        pos_y = adjusted_row_pos + 1 - CORNER_MARGIN
         border_color = clrs.rgb_to_rgba(clrs.Black)
         border_image = pyglet.image.SolidColorImagePattern(border_color).create_image(1, 1)
         box_width = 0.6
@@ -73,7 +81,7 @@ def draw_top_counters(scene, counters):
         scene.draw_label_centered(
             grid_object_id=f"topbox_label_{i}",
             label=label_text,
-            position=(pos_x + 0.18, pos_y- .2),
+            position=(pos_x + 0.18, pos_y - .2),
             color=clrs.Black,
             size=(0.28, 0.28),
             grid_id=Grid_ID.MAIN.value,
@@ -91,14 +99,15 @@ def draw_locked_row_dimmers(scene, dimmed_reels):
     # Draw one overlay per cell across all reels for each dimmed row
     for row_idx in range(GV.HNS_ROWS):
         for reel_idx in range(GV.HNS_COLS):
-            r_x = reel_idx
-            r_y = grid.y_cells - (row_idx+1)
             scene.grid_objects.delete(to_delete_sub_string=f"dimmer_{reel_idx}_{row_idx}")
+    
     for row_idx in dimmed_reels:
+        # Calculate position with gap adjustment
+        adjusted_row_pos = get_row_position_with_gap(row_idx)
         for reel_idx in range(GV.HNS_COLS):
             r_x = reel_idx
-            r_y = grid.y_cells - (row_idx+1)
-            #scene.grid_objects.delete(to_delete_sub_string=f"dimmer_{reel_idx}_{row_idx}")
+            r_y = grid.y_cells - (adjusted_row_pos + 1)
+            
             scene.grid_objects.add(
                 f"dimmer_{reel_idx}_{row_idx}",
                 GridSprite(

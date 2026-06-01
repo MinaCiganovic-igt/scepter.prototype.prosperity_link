@@ -16,12 +16,13 @@ from scepter.gfx.grid_objects.grid_sprite import GridSprite
 from ..project_gfx.scene_template import Grid_ID, SceneGamepartTemplate
 from .scene_holdandspin_helpers import draw_counter_side, draw_top_counters, draw_locked_row_dimmers
 
-BY = 0.06
+BY = 0.12
 TY = 0.3
 LX = 0.0176
 RX = 0.0178
 CENTER_OFFSET = 0.5
 CORNER_MARGIN = 0.25
+ROW_GROUP_GAP = 0.3  # Spacing between groups of 3 rows
 
 class SceneHoldAndSpin(SceneGamepartTemplate):
     def __init__(self, **kwargs):
@@ -29,15 +30,19 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
             height_to_width=2*1080/1920,
             **kwargs
         )
+        # Calculate additional y_cells needed for spacing
+        num_gaps = (GV.HNS_ROWS - 1) // 3  # Number of gaps between groups
+        additional_y_cells = num_gaps * ROW_GROUP_GAP
+        y_cells=int(GV.HNS_ROWS + additional_y_cells)
         self.grids.add(
             Grid_ID.MAIN.value,
             Grid(
                 x_cells=GV.HNS_COLS,
-                y_cells=GV.HNS_ROWS,
+                y_cells=y_cells,
                 left_cells=LX * GV.HNS_COLS / ( 1 - LX - RX ),
                 right_cells=RX * GV.HNS_COLS / ( 1 - RX - LX ),
-                bottom_cells=BY * GV.HNS_ROWS / ( 1 - BY - TY ),
-                top_cells=TY * GV.HNS_ROWS / ( 1 - TY - BY ),
+                bottom_cells=BY * (GV.HNS_ROWS + additional_y_cells) / ( 1 - BY - TY ),
+                top_cells=TY * (GV.HNS_ROWS + additional_y_cells) / ( 1 - TY - BY ),
             ),
             grid_objects=self.grid_objects,
             batches=self.batches,
@@ -59,14 +64,11 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
         GV.my_scenes["holdandspin"] = self
 
     def _cell_center(self, reel: int, row: int) -> Tuple[float, float]:
-        """Return the centered cell coordinates used for drawing sprites/labels."""
-        return (reel + CENTER_OFFSET, row + CENTER_OFFSET)
-    # def _cell_center(self, reel: int, row: int):
-    #     gap_size = 0.6  # razmak između grupa od 3 reda
-    #     group = row // 3
-    #     x = reel + CENTER_OFFSET
-    #     y = row + CENTER_OFFSET + group * gap_size
-    #     return (x, y)
+        """Return the centered cell coordinates used for drawing sprites/labels with spacing every 3 rows."""
+        group = row // 3
+        x = reel + CENTER_OFFSET
+        y = row + CENTER_OFFSET + group * ROW_GROUP_GAP
+        return (x, y)
 
     def initialize_visualization(self, meter_updater=None):
         self.previous_reelpicture = np.full((GV.HNS_COLS, GV.HNS_ROWS), GV.STE["_BLN_2_"])
@@ -315,7 +317,7 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
                     self.draw_sprite_centered(
                         grid_object_id = f"locked_sym_{reel_idx}_{row_idx}",
                         sprite_name = symbol,
-                        position = (reel_idx + 0.5, row_idx + 0.5),
+                        position = self._cell_center(reel_idx, row_idx),
                         grid_id = Grid_ID.MAIN.value,
                         group = GC.REEL_SYMBOLS
                     )
@@ -323,7 +325,7 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
                     self.draw_sprite_centered(
                         grid_object_id = f"reel_sym_{reel_idx}_{row_idx}",
                         sprite_name = symbol,
-                        position = (reel_idx + 0.5, row_idx + 0.5),
+                        position = self._cell_center(reel_idx, row_idx),
                         grid_id = Grid_ID.MAIN.value,
                         group = GC.REEL_SYMBOLS
                     )
@@ -331,7 +333,7 @@ class SceneHoldAndSpin(SceneGamepartTemplate):
                     self.draw_label_centered(
                         grid_object_id = f"reel_label_{reel_idx}_{row_idx}",
                         label = label,
-                        position= (reel_idx + 0.5, row_idx + 0.5),
+                        position= self._cell_center(reel_idx, row_idx),
                         grid_id=Grid_ID.MAIN.value,
                         group=GC.REEL_LABELS,
                     )
